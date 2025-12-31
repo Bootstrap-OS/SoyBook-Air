@@ -22,6 +22,7 @@ vim.opt.expandtab = true      -- Convert tabs to spaces
 vim.opt.shiftwidth = 4        -- Number of spaces for auto-indent
 vim.opt.tabstop = 4           -- Number of spaces that a tab counts for
 vim.opt.smartindent = true    -- Enable smart-indent
+vim.opt.wrap = false          -- Disable word wrapping
 
 -- Search
 vim.opt.ignorecase = true     -- Case insensitive search
