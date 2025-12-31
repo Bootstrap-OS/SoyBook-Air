@@ -5,6 +5,7 @@
 [cursor]
     style = { shape = "Beam", blinking = "On" }
     blink_interval = 600
-    blink_timeout = 0
+    blink_timeout = 10
 [window]
-    decorations = "Buttonless"
+    title = "Terminal"
+    startup_mode = "Maximized"
