@@ -18,6 +18,7 @@ map r reload
 map E extract
 map d trash
 map D cleantrash
+map B bulkrename
 map <c-t> push :touch<space>
 map <c-n> push :mkdir<space>
 map <c-r> push :rename<space>
@@ -32,7 +33,7 @@ map gs cd /usr/local/bin/
 # Opening Files
 cmd open &{{
     case $(file --mime-type -Lb $f) in
-        text/*) lf -remote "send $id \$$EDITOR \$fx";;
+        text/*|application/json) lf -remote "send $id \$$EDITOR \$fx";;
         *) for f in $fx; do $OPENER $f > /dev/null 2> /dev/null & done;;
     esac
 }}
@@ -51,6 +52,28 @@ cmd trash ${{
     else
         trash -v -F "$f"
     fi
+}}
+
+# Bulk Renaming Files
+cmd bulkrename ${{
+    tmpfile_old="$(mktemp)"
+    tmpfile_new="$(mktemp)"
+
+    [ -n "$fs" ] && fs=$(basename -a $fs) || fs=$(ls)
+
+    echo "$fs" > "$tmpfile_old"
+    echo "$fs" > "$tmpfile_new"
+    $EDITOR "$tmpfile_new"
+
+    [ "$(wc -l < "$tmpfile_old")" -eq "$(wc -l < "$tmpfile_new")" ] || { rm -f "$tmpfile_old" "$tmpfile_new"; exit 1; }
+
+    paste "$tmpfile_old" "$tmpfile_new" | while IFS="$(printf '\t')" read -r src dst
+    do
+        [ "$src" = "$dst" ] || [ -e "$dst" ] || mv -- "$src" "$dst"
+    done
+
+    rm -f "$tmpfile_old" "$tmpfile_new"
+    lf -remote "send $id unselect"
 }}
 
 # Cleaning Trash Files
